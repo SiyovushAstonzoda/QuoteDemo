@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Domain.Dtos.QuoteDto;
+using Infrastructure.Context;
 using Npgsql;
 using System.Globalization;
 
@@ -7,17 +8,16 @@ namespace Infrastructure.Services;
 
 public class QuoteService
 {
-    string connectionString = "Server = localhost; Port = 5432; Database = QuoteDapperDemoDb; User Id = postgres; Password = masik00787737;";
-
-    public QuoteService()
+    private readonly DapperContext _dapperContext;
+    public QuoteService(DapperContext context)
     {
-
+        _dapperContext = context;
     }
 
     //Add Quote
     public string AddQuote(AUQuoteDto quote)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " insert into quotes(author, quotetext, categoryid) " +
                           " values (@Author, @QuoteText, @CategoryId);";
@@ -36,7 +36,7 @@ public class QuoteService
     //Update Quote
     public string UpdateQuote(AUQuoteDto quote)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " update quotes " +
                           " set author = @Author, quotetext = @QuoteText, categoryid = @CategoryId " +
@@ -57,7 +57,7 @@ public class QuoteService
     //Delete Quote
     public string DeleteQuote(int id)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " delete from quotes " +
                           " where id = @Id;";
@@ -74,7 +74,7 @@ public class QuoteService
     //Get All Quotes
     public List<GQuoteDto> GetAllQuotes()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select * from quotes; ";
 
@@ -87,7 +87,7 @@ public class QuoteService
     //Get Quote by Id
     public GQuoteDto GetQuoteById(int id)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = "select * from quotes " +
                           " where id = @Id;";
@@ -104,7 +104,7 @@ public class QuoteService
     //Get list of Quotes including CategoryName
     public List<GetAllQuotesWithCategoryNameDto> GetAllQuotesWithCategoryName()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = "select q.id, q.author, q.quotetext, q.categoryid, c.categoryname " +
                 " from quotes as q " +
@@ -120,7 +120,7 @@ public class QuoteService
     //Get all quotes by category (send category id and get all quotes)
     public List<GQuoteDto> GetAllQuotesByCategoryId(int id)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select * from quotes " +
                           " where categoryid = @Id;";
@@ -137,7 +137,7 @@ public class QuoteService
     //Get a random quote
     public GQuoteDto GetRandomQuote()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select * from quotes " +
                           " order by random() " +
@@ -152,7 +152,7 @@ public class QuoteService
     //Get all Authors with number of quotes
     public List<GetAllAuthorsDto> GetAllAuthors()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select author, count(quotetext) as quoteamount " +
                 " from quotes " +
@@ -167,7 +167,7 @@ public class QuoteService
     //Get number of Authors and number of Quotes
     public GetAmountAQ GetAmountOfAuthorsAndQuotes()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select count(author) as authoramount, count(quotetext) as quoteamount " +
                           " from quotes;";
@@ -181,7 +181,7 @@ public class QuoteService
     //Get Quotes filtering with quote text
     public List<GQuoteDto> GetQuotesByQuoteText(string text)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select * " +
                           " from quotes " +
@@ -196,7 +196,7 @@ public class QuoteService
     //Get top 10 most popular authors
     public List<GetTopAuthorsDto> GetTopAuthors()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select author " +
                           " from quotes " +

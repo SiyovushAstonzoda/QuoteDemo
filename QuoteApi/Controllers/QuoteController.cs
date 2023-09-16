@@ -6,13 +6,13 @@ namespace QuoteApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class QuoteController
+public class QuoteController : ControllerBase
 {
     private QuoteService _quoteService;
 
-    public QuoteController()
+    public QuoteController(QuoteService quoteService)
     {
-        _quoteService = new QuoteService();
+        _quoteService = quoteService; 
     }
 
     [HttpPost("AddQuote")]

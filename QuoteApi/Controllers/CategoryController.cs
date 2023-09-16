@@ -11,9 +11,9 @@ public class CategoryController
 {
     private CategoryService _categoryService;
 
-    public CategoryController()
+    public CategoryController(CategoryService categoryService)
     {
-        _categoryService = new CategoryService();
+        _categoryService = categoryService;
     }
 
     [HttpPost("CreateCategory")]

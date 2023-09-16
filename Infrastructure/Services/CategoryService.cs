@@ -1,22 +1,22 @@
 ﻿using Dapper;
 using Domain.Dtos.CategoryDto;
+using Infrastructure.Context;
 using Npgsql;
 
 namespace Infrastructure.Services;
 
 public class CategoryService
 {
-    string connectionString = "Server = localhost; Port = 5432; Database = QuoteDapperDemoDb; User Id = postgres; Password = masik00787737;";
-
-    public CategoryService()
+    private readonly DapperContext _dapperContext;
+    public CategoryService(DapperContext context)
     {
-        
+        _dapperContext = context;
     }
 
     //Add Category
     public string AddCategory(AUCategoryDto category)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = $"insert into Categories (categoryname) " +
                 $"values (@CategoryName)";
@@ -33,7 +33,7 @@ public class CategoryService
     //Update Category
     public string UpdateCategory(AUCategoryDto category)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = "update Categories " +
                 "set categoryname = @CategoryName " +
@@ -52,7 +52,7 @@ public class CategoryService
     //Delete Category
     public string DeleteCategory(int id)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = "delete from Categories " +
                 "where id = @Id;";
@@ -69,7 +69,7 @@ public class CategoryService
     //Get all categories
     public List<GCategoryDto> GetAllCategories()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select * from categories ";
 
@@ -82,7 +82,7 @@ public class CategoryService
     //Get Category By Id
     public GCategoryDto GetCategoryById(int id)
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select * from categories where id = @Id ";
 
@@ -98,7 +98,7 @@ public class CategoryService
     //Get all Categories with number of quotes
     public List<GetAllCategoriesWithNumberOfQuotesDto> GetAllCategoriesWithNumberOfQuotes()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = " select c.id, c.categoryname, count(q.id) as TotalQuotes " +
                 " from categories as c " +
@@ -116,7 +116,7 @@ public class CategoryService
     //Get Categories including list of quotes in it
     public List<GetCategoriesWithListOfQuotesDto> GetCategoriesWithListOfQuotes()
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var conn = _dapperContext.CreateConnection())
         {
             var command = "select c.id, c.categoryname, q.quotetext " +
                 " from categories as c " +
